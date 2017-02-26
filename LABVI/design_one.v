@@ -1,4 +1,4 @@
-module Four_Segs(raw, systclk, reset, seg)
+module Four_Segs(raw, systclk, reset, seg):
     input systclk;
     input  [3:0] raw;
     output [7:0] selector;
@@ -8,15 +8,23 @@ module Four_Segs(raw, systclk, reset, seg)
 
 endmodule
 
+module 4_to_1_mux(input [1:0] control_line, 
+        input [3:0] signal_one, input [3:0] signal_two,
+         input[3:0] signal_three, input[3:0] signal_four, output [3:0] selected_sig);
+
+        assign selected_sig = signal_one&(control_line=2'd0) |
+                              signal_two&(control_line=2'd1) |
+                              signal_three&(control_line=2'd2) |
+                              signal_four&(control_line=2'd3);
 
 
-
+endmodule
 
 //** wrapper to combine mod 10 and deboncer 
 /** inputs: raw input, sysclock, reset switch, 
 **  output: number corresponding to the number that one button was clicked
 **/
-module Mod10_wrapper(input raw, input reset, input sysclock, output [3:0] count ) 
+module mod10_wrapper(input raw, input reset, input sysclock, output [3:0] count ); 
     
     wire clean; 
     debounce debouncer(raw,sysclock, count);
@@ -28,7 +36,7 @@ module Mod10_wrapper(input raw, input reset, input sysclock, output [3:0] count 
 endmodule 
 
 /**Important modules**/
-module Mod10Counter(input clean_input, input reset, output[3:0] count):
+module Mod10Counter(input clean_input, input reset, output[3:0] count);
 
 
     reg [3:0] count;
