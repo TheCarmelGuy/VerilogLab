@@ -1,21 +1,61 @@
 module Four_Segs(raw, systclk, reset, seg):
     input systclk;
     input  [3:0] raw;
-    output [7:0] selector;
+    input [3:0] reset; //reset swithces
+    output [7:0] annode_selector;
     output [7:0] seg;
+     
+     
+    wire [3:0] number_zero, number_one, number_two, number_three,output_number;  
+    wire [3:0] annode_line; 
+    
+    //initialize counter on each button
+    mod10_wrapper  btn_one (raw[0], reset,sysclock, number_zero);
+    mod10_wrapper  btn_two (raw[1], reset,sysclock, number_one);
+    mod10_wrapper  btn_three (raw[2], reset,sysclock, number_two);
+    mod10_wrapper  btn_four (raw[3], reset,sysclock, number_three);
 
+    
+    annode_counter annode_counter (sysclock, annode_line);  //set annode shifting
+    
+    4_to_1_mux select(annode_line, number_zero, number_one, number_two, number_three,output_number); //multiplex based on the input annode line 
+    
+    assign annode_selector = {annode_line, 1'b1, 1'b1, 1'b1, 1'b1}; //set annode   
+
+    //set the signal on
+    Encoder encoder (output_number, seg); //output selected signal onto 7 segment display    
+
+endmodule
+
+
+//annode divder to increment with clock signal
+module annode_counter(input sysclock, output [3:0] annode); 
+
+    reg [3:0]annode;
+
+    reg [1:0] counter;
+
+    always @ (posedge sysclock) begin 
+        counter<=counter +  2'd1;
+        if(counter == 2'd3) 
+            counter<= 2'd0; 
+    end
+
+    assign annode = { ~(counter==2'd3), ~(counter==2'd2) , ~(counter==2'd1), ~(counter--2'd0)};
 
 
 endmodule
 
-module 4_to_1_mux(input [1:0] control_line, 
-        input [3:0] signal_one, input [3:0] signal_two,
-         input[3:0] signal_three, input[3:0] signal_four, output [3:0] selected_sig);
 
-        assign selected_sig = signal_one&(control_line=2'd0) |
-                              signal_two&(control_line=2'd1) |
-                              signal_three&(control_line=2'd2) |
-                              signal_four&(control_line=2'd3);
+
+module 4_to_1_mux(input [3:0] annode_line, 
+        input [3:0] signal_zero, input [3:0] signal_one,
+        input[3:0] signal_two, input[3:0] signal_three, output [3:0] selected_sig);
+
+        assign selected_sig = signal_zero&{4{~anode_line[0]}} |
+                              signal_one& {4{~anode_line[1]}}  |
+                              signal_two {4{~anode_line[2]}} |
+                              signal_three& {4{~anode_line[3]}};
 
 
 endmodule
@@ -82,8 +122,6 @@ module debounce(input raw,
 
 
 endmodule
-
-
 
 
 
