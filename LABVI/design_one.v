@@ -1,5 +1,5 @@
-module Four_Segs(raw, systclk, reset, seg):
-    input systclk;
+module Four_Segs(raw, sysclock, reset, seg):
+    input sysclock;
     input  [3:0] raw;
     input [3:0] reset; //reset swithces
     output [7:0] annode_selector;
@@ -18,7 +18,7 @@ module Four_Segs(raw, systclk, reset, seg):
     
     annode_counter annode_counter (sysclock, annode_line);  //set annode shifting
     
-    4_to_1_mux select(annode_line, number_zero, number_one, number_two, number_three,output_number); //multiplex based on the input annode line 
+    4_to_1_mux selecter (annode_line, number_zero, number_one, number_two, number_three,output_number); //multiplex based on the input annode line 
     
     assign annode_selector = {annode_line, 1'b1, 1'b1, 1'b1, 1'b1}; //set annode   
 
@@ -141,5 +141,6 @@ module Encoder (number, sevenSeg);
     assign sevenSeg [5] = (number == 4’d1) | (number == 4’d2) | (number == 4’d3) | 
                                 (number == 4’d7);
     assign sevenSeg [6] = (number == 4’d0) | (number == 4’d1) | (number == 4’d7);
+    assign sevenSeg [7] = 1'b1; //set dp
 endmodule;
                  
