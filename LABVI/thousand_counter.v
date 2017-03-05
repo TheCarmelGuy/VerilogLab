@@ -28,19 +28,39 @@ module thousandCounter(raw, sysclock, reset,segs, annode_select,led);
     output [7:0] segs;
     output [7:0] annode_select; 
    
-    wire [3:0] c_zero, c_one, c_two, c_three;
+    //wire [3:0] c_zero, c_one, c_two, c_three;
     wire clean_up, clean_down;
     wire [3:0] signal_out;
     wire clock_div;
     
+	
+	input sysclock;
+	output [3:0] count_zero, count_one, count_two, count_three;
+	input up_btn, down_btn, reset;
+	
+	//wires to dictated up or down logic
+	wire trigger_up_zero, trigger_down_zero;
+	wire trigger_up_one, trigger_down_one ;
+	wire trigger_up_two, trigger_down_two;
+	
+	
+	
+
+
     //input and output button
     debounce D1(raw[0], sysclock, clean_up);
     debounce D2(raw[1], sysclock, clean_down);
    
     clock_divider div (sysclock, clock_div);
     
-    combo_counter C1(sysclock,clean_up, clean_down, reset, c_zero,c_one,c_two,c_three);
-    annode_counter counter1 (clock_div, annode_line);
+    //combo_counter C1(sysclock,clean_up, clean_down, reset, c_zero,c_one,c_two,c_three);
+	    
+    Mod10Counter M_zero(sysclock, clean_up, clean_down, reset, count_zero, trigger_up_zero, trigger_down_zero);
+    Mod10Counter M_one(sysclock,trigger_up_zero, trigger_down_zero, reset, count_one, trigger_up_one, trigger_down_one);
+    Mod10Counter M_two(sysclock,trigger_up_one, trigger_down_one, reset, count_two, trigger_up_two, trigger_down_two);
+    Mod10Counter M_three(sysclock,trigger_up_two, trigger_down_two, reset, count_three, trigger_up_three, trigger_down_four);
+	
+	annode_counter counter1 (clock_div, annode_line);
     four_to_one_mux M1(annode_line, c_zero, c_one, c_two, c_three, signal_out);
     Encoder encode_out(signal_out, segs);
         
@@ -130,20 +150,21 @@ module Mod10Counter(input sysclock,input up_input, input down_input, input reset
        else begin
             if (up_input) begin
               	count <= count + 4'd1; 
-                if(count == 4'd9)   
+                if(count == 4'd9) begin   
                     count<= 4'd0;
                     trigger_up<= 1'd1; //set trigger to 1          
-               else 
+                end
+				else 
                    trigger_up<= 1'd0; //set trigger up to 0
-             end
-            else if (down_input) 
+            end else if (down_input) begin
                count<= count - 4'd1;
                if(count == 4'd0) begin
-                   count <= 4'd8;
+                   count <= 4'd9;
                    trigger_down <= 1'd1;
                 end
                 else 
                    trigger_down<=1'd0;  
+		    end
         end
            
     end

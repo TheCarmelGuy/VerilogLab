@@ -41,7 +41,7 @@ module annode_counter(input sysclock, output [3:0] annode);
             counter<= 2'd0; 
     end
 
-    assign annode = { ~(counter==2'd3), ~(counter==2'd2) , ~(counter==2'd1), ~(counter--2'd0)};
+    assign annode = { ~(counter==2'd3), ~(counter==2'd2) , ~(counter==2'd1), ~(counter==2'd0)};
 
 
 endmodule
@@ -142,5 +142,5 @@ module Encoder (number, sevenSeg);
                                 (number == 4’d7);
     assign sevenSeg [6] = (number == 4’d0) | (number == 4’d1) | (number == 4’d7);
     assign sevenSeg [7] = 1'b1; //set dp
-endmodule;
+endmodule
                  
