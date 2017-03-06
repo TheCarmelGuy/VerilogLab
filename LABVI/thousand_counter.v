@@ -55,10 +55,10 @@ module thousandCounter(raw, sysclock, reset,segs, annode_select,led);
     
     //combo_counter C1(sysclock,clean_up, clean_down, reset, c_zero,c_one,c_two,c_three);
 	    
-    Mod10Counter M_zero(sysclock, clean_up, clean_down, reset, count_zero, trigger_up_zero, trigger_down_zero);
-    Mod10Counter M_one(sysclock,trigger_up_zero, trigger_down_zero, reset, count_one, trigger_up_one, trigger_down_one);
-    Mod10Counter M_two(sysclock,trigger_up_one, trigger_down_one, reset, count_two, trigger_up_two, trigger_down_two);
-    Mod10Counter M_three(sysclock,trigger_up_two, trigger_down_two, reset, count_three, trigger_up_three, trigger_down_four);
+    Mod10Counter M_zero(sysclock, clean_up, clean_down, reset, count_zero, trigger_up_zero, trigger_down_zero);//ones place
+    Mod10Counter M_one(sysclock,trigger_up_zero, trigger_down_zero, reset, count_one, trigger_up_one, trigger_down_one); //tens place
+    Mod10Counter M_two(sysclock,trigger_up_one, trigger_down_one, reset, count_two, trigger_up_two, trigger_down_two); //hundreds place
+    Mod10Counter M_three(sysclock,trigger_up_two, trigger_down_two, reset, count_three, trigger_up_three, trigger_down_four); //thousands place
 	
 	annode_counter counter1 (clock_div, annode_line);
     four_to_one_mux M1(annode_line, c_zero, c_one, c_two, c_three, signal_out);
