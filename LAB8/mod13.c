@@ -2,7 +2,7 @@
 
 int main(void) {
 
-	unsigned char inc,dec, counter, done;
+	unsigned char inc,dec,button, counter, done;
 
 	/**
 	* set up inputs and outputs
@@ -17,9 +17,9 @@ int main(void) {
 	counter = 0;
 
 	while (1) {
-
+		button = (PINA ^ 0xff);
 		//if increment is hit
-		if( (inc = (PINA ^ 0xff)&0x01) && (done == 0)) {
+		if( (button&1)  != 0 && (done == 0)) {
 
 			if (counter < 13) {
 				counter += 1; //incremenet counter by one
@@ -28,7 +28,9 @@ int main(void) {
 			}
 			done = 1; 
 			
-		}else if( (dec = (PINB ^ 0xff)&0x01) && (done == 0)) {
+		}
+		
+		else if( (button& 0x08) != 0 && (done == 0)) {
 
 			if (counter > 0) {
 				counter -= 1; //incremenet counter by one
@@ -39,7 +41,7 @@ int main(void) {
 		}
 		
 		//make sure clock doesnt mess up output 
-		if(inc == 0 | dec == 0 ){
+		if(button == 0){
 			done = 0;
 
 		}
@@ -53,3 +55,4 @@ int main(void) {
 	
 
 }
+
